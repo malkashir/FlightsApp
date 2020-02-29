@@ -1,0 +1,107 @@
+﻿body, html {
+    background-image: url('airplane.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+}
+
+#container {
+    padding: 5px;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    position: inherit;
+    user-select: none;
+    z-index: 1000;
+}
+
+
+.info {
+    padding: 5px;
+    background-image: url('1234.png');
+    background-color: white;
+    background-size: 10%;
+    text-align: left;
+}
+
+.show_wish_list {
+    padding: 5px;
+    background-image: url('1234.png');
+    background-color: white;
+    background-size: 10%;
+    text-align: left;
+}
+
+#flightsStyle, #wishListStyle {
+    margin: 30px;
+    background-color: #B0C4DE;
+    border: 1px solid black;
+    opacity: 0.99;
+    border-radius: 8px;
+}
+
+h1 {
+    text-align: center;
+}
+
+    h1.font {
+        font-family: "Calibri", Times, serif;
+        font-size: 60px;
+        font-weight: bold;
+        -webkit-text-stroke-width: 2px;
+        -webkit-text-stroke-color: #483D8B;
+        color: white;
+    }
+
+label, span {
+    font-weight: bold;
+    font-family: "Calibri", Times, serif;
+}
+
+label {
+    margin-left: 5%;
+    font-size: 25px;
+    color: #483D8B;
+}
+
+span {
+    margin-left: 10px;
+    font-size: 15px;
+    color: black;
+}
+
+
+.bt {
+    margin-left: 5%;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #483D8B;
+    margin-bottom: 5px;
+    background-color: white;
+}
+
+
+
+
+
+
+
+
+#h {
+    font-size: 35px;
+}
+
+
+/*button*/
+#myflight, #search, #mybu {
+    margin-left: 5%;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #483D8B;
+    margin-top: 10px;
+}

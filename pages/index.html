@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!-- ajax + JQ -->
+    <script src="../Scripts/ajaxCalls.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <!-- CSS STYLE + Bootstrap-->
+    <link href="styleview.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script>
+        $(document).ready(function () {
+            $('#search').click(search_flight);
+            $('#myflight').click(my_flight);
+            $(".info").hide();
+            $(".show_wish_list").hide();
+        });
+
+        function search_flight() {
+            stringFlight = " ";
+            let flyFrom = $('#flight_from').val();
+            let to = $('#flight_to').val();
+            var dateFrom1 = $('#date_form').val();
+            var dateTo1 = $('#date_until').val();
+
+            var mm_start = dateFrom1.substring(5, 7);
+            var dd_start = dateFrom1.substring(8, 10);
+            var yyy_start = dateFrom1.substring(0, 4);
+            var dateFrom = dd_start + "/" + mm_start + "/" + yyy_start;
+
+            var mm_end = dateTo1.substring(5, 7);
+            var dd_end = dateTo1.substring(8, 10);
+            var yyy_end = dateTo1.substring(0, 4);
+            var dateTo = dd_end + "/" + mm_end + "/" + yyy_end;
+
+            var my_url = "https://api.skypicker.com/flights?flyFrom=" + flyFrom + "&to=" + to + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&partner=shir";
+            ajaxCall('GET', my_url, " ", getFlightSuccessCB, getFlightErrorCB);
+        }
+
+        function getFlightSuccessCB(data) {
+            $(".info").show();
+
+            let data_flights = " ";
+            for (var i = 0; i < data.data.length; i++) {
+                if (data.data[i].route.length > 1) {
+                    var routes_from_arr = [];
+                    var routes_to_arr = [];
+                    var route = " ";
+                    for (var N = 0; N < data.data[i].route.length; N++) {
+                        routes_from_arr.push(data.data[i].route[N].cityFrom);
+                    }
+                    for (var j = 0; j < data.data[i].route.length; j++) {
+                        routes_to_arr.push(data.data[i].route[j].cityTo);
+                    }
+                    if ((routes_from_arr && routes_from_arr.length == 1)) { //direct
+                        route += routes_from_arr[0];
+                    }
+                    else if (routes_from_arr && routes_from_arr.length > 1) //another ways
+                    {
+                        route += routes_from_arr[0];
+                        for (var D = 1; D < routes_from_arr.length; D++) { //from 1 stop
+                            route += " ⇒ " + routes_from_arr[D];
+                        }
+                    }
+                    if ((routes_to_arr && routes_to_arr.length == 1)) { //direct
+                        if (routes_from_arr.length == 1) {
+                            route += " ⇒ " + routes_from_arr[1];
+                        }
+                    }
+                    else if (routes_to_arr && routes_to_arr.length > 1) //another ways
+                    {
+                        temp = routes_to_arr.length;
+                        route += " ⇒ " + routes_to_arr[temp - 1];
+                    }
+                }
+                data_flights += "<div id='flightsStyle'>";
+                data_flights += "<label>Airlines: </label>";
+                data_flights += "<span id='airlines" + i + "'>" + data.data[i].airlines + "          </span>";
+                data_flights += "<label>Price: </label>";
+                data_flights += "<span id='price" + i + "'>" + data.data[i].price + "€          </span>";
+                data_flights += "<label>Routes: </label>";
+                data_flights += "<span id='route" + i + "'>" + route + "          </span></br>";
+                data_flights += "<input type='button' class='bt' id='" + i + "' value='Add to Wishlist' onclick='addList(this)'/>"; //add to your list
+                data_flights += "</br></div>";
+            }
+            document.getElementById("flights").innerHTML = data_flights;
+        }
+
+        function getFlightErrorCB(err) { console.log(err) }
+
+        function addList(btn) {
+            var price = document.getElementById('price' + btn.id).innerHTML;
+            var airlines = document.getElementById('airlines' + btn.id).innerHTML;
+            var route = document.getElementById('route' + btn.id).innerHTML;
+            flight =
+                {
+                    "Price": price,
+                    "Airlines": airlines,
+                    "Route": route,
+                }
+            ajaxCall('POST', "../api/Flight", JSON.stringify(flight), postFlightSuccessCB, postFlightErrorCB);
+        }
+        function postFlightSuccessCB(data) { alert("The flight was added to the wish-list") }
+        function postFlightErrorCB(err) { console.log(err) }
+
+        function my_flight() {
+            ajaxCall('GET', "../api/Flight", " ", get_2_FlightSuccessCB, get_2_FlightErrorCB);
+        }
+        function get_2_FlightSuccessCB(data_flight) {
+            $(".show_wish_list").show();
+            $(".info").hide();
+            let len = data_flight.length
+            for (var z = len; z > 0; z--) {
+                stringFlight += "<div id='wishListStyle'>";
+                stringFlight += "<label> Flight number" + z + ":</label></br>";
+                stringFlight += "<label> Airlines: </label><span>" + data_flight[z - 1].Airlines + "          </span>";
+                stringFlight += "<label> Price: </label><span>" + data_flight[z - 1].Price + "          </span>";
+                stringFlight += "<label> Routes: </label><span>" + data_flight[z - 1].Route + "</span>";
+                stringFlight += "</br></div>";
+                document.getElementById("theflight").innerHTML = stringFlight;
+            }
+        }
+        function get_2_FlightErrorCB(err) { console.log(err) }
+    </script>
+
+</head>
+<body>
+    <div id="container">
+        <h1 class="font">Flight Information</h1>
+        <label>From: </label>
+        <input type="text" id="flight_from" />
+        <label>To: </label>
+        <input type="text" id="flight_to" />
+        <br />
+        <label>Depart: </label>
+        <input type="date" id="date_form" />
+        <label>Return: </label>
+        <input type="date" id="date_until" />
+        <br />
+        <button id="search">Search Flights</button>
+        <button id="myflight">Wishlist</button>
+        <br />
+        <br />
+        <div class="info">
+            <h1 class="font">Relevant flights:</h1>
+            <div id="flights"> </div>
+        </div>
+        <div class="show_wish_list">
+            <h1 class="font">Your wish list:</h1>
+            <div id="theflight">  </div>
+        </div>
+
+    </div>
+</body>
+</html>
