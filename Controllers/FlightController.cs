@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,6 +18,11 @@ namespace FlightsApp.Controllers
             return Flight.FlightList;
 
         }
+
+        ////public List<Flight> Get(int id)
+        ////{
+        ////    return Flight.FlightList;
+        ////}
 
         // POST api/<controller>
         public void Post([FromBody]Flight flight)
